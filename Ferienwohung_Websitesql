@@ -1,0 +1,30 @@
+/*-----------------Zug----------------------------*/
+CREATE TABLE Kunde
+( iban                  VARCHAR2(22) NOT NULL,
+  passwort              VARCHAR2(30) NOT NULL,
+  name                  VARCHAR2(30) NOT NULL,
+  mail                  VARCHAR2(30) NOT NULL,
+  gehoert_zu_land       VARCHAR2(20) NOT NULL,
+  adressid              INT NOT NULL
+  );
+
+/*-----------------Wagen----------------------------*/
+CREATE TABLE Bild
+( name                  VARCHAR2(30) NOT NULL,
+  ferienwohnungsname    VARCHAR2(30) NOT NULL,
+  CONSTRAINT fk_zugNr FOREIGN KEY (zug_Nr) REFERENCES Zug(zug_Nr) ON DELETE CASCADE
+);
+
+/*-----------------Zug----------------------------*/
+CREATE TABLE Buchung
+( reisestart            DATE NOT NULL,
+  reiseende             DATE NOT NULL,
+  buchungsnummer        INT NOT NULL,
+  kundetaetigtbuchung   INT NOT NULL,
+  ferienwohnungsname    VARCHAR2(30) NOT NULL,
+  sterne                INT NOT NULL,
+  buchungsdatum         DATE NOT NULL,
+  rechnungsdatum        DATE NOT NULL,
+  rechnungsnummer       INT NOT NULL,
+  rechnungsbetrag       INT NOT NULL
+  );
