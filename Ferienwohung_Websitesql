@@ -1,21 +1,25 @@
-/*-----------------Zug----------------------------*/
+/*-----------------Kunde----------------------------*/
 CREATE TABLE Kunde
 ( iban                  VARCHAR2(22) NOT NULL,
   passwort              VARCHAR2(30) NOT NULL,
   name                  VARCHAR2(30) NOT NULL,
   mail                  VARCHAR2(30) NOT NULL,
   gehoert_zu_land       VARCHAR2(20) NOT NULL,
-  adressid              INT NOT NULL
+  adressid              INT NOT NULL,
+  CONSTRAINT pk_kunde   PRIMARY KEY (name),
+  CONSTRAINT fk_gehoert_zu_land FOREIGN KEY (gehoert_zu_land)  REFERENCES Land(landname),
+  CONSTRAINT fk_adressid FOREIGN KEY (adressid)  REFERENCES Adresse(adressid)
+
   );
 
-/*-----------------Wagen----------------------------*/
+/*-----------------Bild----------------------------*/
 CREATE TABLE Bild
-( name                  VARCHAR2(30) NOT NULL,
-  ferienwohnungsname    VARCHAR2(30) NOT NULL,
-  CONSTRAINT fk_zugNr FOREIGN KEY (zug_Nr) REFERENCES Zug(zug_Nr) ON DELETE CASCADE
+( bildname                 VARCHAR2(30) NOT NULL,
+  ferienwohnungsname       VARCHAR2(30) NOT NULL,
+  CONSTRAINT pk_bildname   PRIMARY KEY (bildname) 
 );
 
-/*-----------------Zug----------------------------*/
+/*-----------------Buchung----------------------------*/
 CREATE TABLE Buchung
 ( reisestart            DATE NOT NULL,
   reiseende             DATE NOT NULL,
@@ -26,5 +30,103 @@ CREATE TABLE Buchung
   buchungsdatum         DATE NOT NULL,
   rechnungsdatum        DATE NOT NULL,
   rechnungsnummer       INT NOT NULL,
-  rechnungsbetrag       INT NOT NULL
+  rechnungsbetrag       INT NOT NULL,
+  CONSTRAINT pk_buchunsnummer  PRIMARY KEY (buchungsnummer),
+  CONSTRAINT fk_kunde FOREIGN KEY (kundetaetigtbuchung) REFERENCES Kunde(mail),
+  CONSTRAINT fk_ferienwohnung FOREIGN KEY (ferienwohnungsname) REFERENCES Ferienwohnung(ferienwohnungsname)
+);
+  
+/*-----------------Anzahlung----------------------------*/
+CREATE TABLE Anzahlung
+( betrag                INT,
+  datum                 DATE,
+  anzahlungsid          INT,
+  buchungsnummer        INT,
+  CONSTRAINT pk_anzahlung PRIMARY KEY (anzahlungsid),
+  CONSTRAINT fk_buchung FOREIGN KEY (buchungsnummer) REFERENCES Buchung(buchungsnummer)
+
   );
+/*-----------------Land----------------------------*/
+CREATE TABLE Land
+( landname                  VARCHAR2(30),
+  CONSTRAINT pk_land PRIMARY KEY (landname)
+);
+
+/*-----------------Ferienwohnung----------------------------*/
+CREATE TABLE Ferienwohnung
+( größe                 INT NOT NULL,
+  ferienwohnungsname    VARCHAR2(30) NOT NULL,
+  preis                 INT NOT NULL,
+  zimmeranzhal          INT NOT NULL,
+  bildname              VARCHAR2(30),
+  inland                VARCHAR2(30) NOT NULL,
+  adressid              INT NOT NULL,
+  CONSTRAINT pk_ferienwohnungsname PRIMARY KEY (ferienwohnungsname),
+  CONSTRAINT fk_bildname FOREIGN KEY (bildname) REFERENCES Bild(bildname),
+  CONSTRAINT fk_landname FOREIGN KEY (inland) REFERENCES Land(landname),
+  CONSTRAINT fk_adressId FOREIGN KEY (adressid) REFERENCES Adresse(adressid)
+
+);
+
+/*-----------------fwBeinhaltetAusstattung----------------------------*/
+CREATE TABLE fwBeinhaltetAusstattung
+( ausstattungsname      VARCHAR2(30),
+  ferienwohnugnsname    VARCHAR2(30) NOT NULL,
+  CONSTRAINT pk_fwbeinhaltetausstattung PRIMARY KEY (ausstattungsname),
+  CONSTRAINT fk_ferienwohnung FOREIGN KEY (ferienwohnugnsname) REFERENCES Ferienwohnung(ferienwohnungsname),
+  CONSTRAINT fk_austattung FOREIGN KEY (ausstattungsname) REFERENCES Ausstattung(ausstattungsname)
+);
+
+/*-----------------Ausstattung----------------------------*/
+CREATE TABLE Ausstattung
+( ausstattungsname      VARCHAR2(30),
+  CONSTRAINT pk_ausstattung PRIMARY KEY (ausstattungsname)
+);
+
+/*-----------------Touristenattraktion----------------------------*/
+CREATE TABLE Touristenattraktion
+( beschreibung                  VARCHAR2(300),
+  toursitenattraktionsname      VARCHAR2(30),
+  CONSTRAINT pk_touristenattraktion PRIMARY KEY (toursitenattraktionsname)
+);
+
+/*-----------------Adresse----------------------------*/
+CREATE TABLE Adresse
+( ort                        VARCHAR2(30),
+  plz                        INT,
+  strasse                    VARCHAR2(30),
+  hausnummer                 INT,
+  adressid                   INT,
+  CONSTRAINT pk_adresse PRIMARY KEY (adressid)
+);
+
+/*-----------------Entfernung----------------------------*/
+CREATE TABLE Entfernung
+( ferienwohnungsname                VARCHAR2(30),
+  touristenattraktionsname          VARCHAR2(30),
+  entfernunginkm                    INT,
+  CONSTRAINT pk_ferienwohnungsname  PRIMARY KEY (ferienwohnungsname),
+  CONSTRAINT fk_touristenattraktion FOREIGN KEY (touristenattraktionsname) REFERENCES Touristenattraktion(toursitenattraktionsname),
+  CONSTRAINT fk_ferienwohnungsname  FOREIGN KEY (ferienwohnungsname) REFERENCES Ferienwohnung(ferienwohnungsname)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
